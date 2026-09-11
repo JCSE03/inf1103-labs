@@ -10,7 +10,7 @@ while True:
         print("Error: Negative numbers are not allowed.")
 
     elif userInput.isdigit():
-        inventory = int(userInput)
+        inventory += int(userInput)
 
     else:
         print("Error: Invalid entry. Please enter a valid number.")
