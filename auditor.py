@@ -5,3 +5,7 @@ while True:
 
     if userInput == "quit":
         break
+
+    else:
+        if userInput.isdigit():
+            inventory = int(userInput)
