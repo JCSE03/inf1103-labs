@@ -9,3 +9,6 @@ while True:
     else:
         if userInput.isdigit():
             inventory = int(userInput)
+
+        else:
+            print("Error: please enter digit quantity or 'quit'")
