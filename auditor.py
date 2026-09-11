@@ -12,5 +12,9 @@ while True:
     elif userInput.isdigit():
         inventory += int(userInput)
 
+        if inventory > 500:
+            print("OVERSTOCK ALERT: Total inventory of "  + str(inventory) + " exceeds limit of 500 units!")
+            break
+
     else:
         print("Error: Invalid entry. Please enter a valid number.")
