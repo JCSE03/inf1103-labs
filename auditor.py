@@ -6,9 +6,11 @@ while True:
     if userInput == "quit":
         break
 
-    else:
-        if userInput.isdigit():
-            inventory = int(userInput)
+    elif userInput.startswith("-") and userInput[1:].isdigit():
+        print("Error: Negative numbers are not allowed.")
 
-        else:
-            print("Error: please enter digit quantity or 'quit'")
+    elif userInput.isdigit():
+        inventory = int(userInput)
+
+    else:
+        print("Error: Invalid entry. Please enter a valid number.")
