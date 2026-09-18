@@ -19,6 +19,9 @@ def get_valid_inputs():
 def process_delivery(current_total, new_value):
     return current_total + new_value
 
+def calculate_tax(amount):
+    return amount * 0.10
+
 
 inventory = 0
 failed_entries = 0 
@@ -29,6 +32,9 @@ while True:
     if val == "quit":
         break
 
+    tax = calculate_tax(val)
+    print("Tax for this delivery (10%): " + str(tax))
+     
     inventory = process_delivery(inventory, val)
 
     if inventory > 500:
