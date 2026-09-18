@@ -22,6 +22,11 @@ def process_delivery(current_total, new_value):
 def calculate_tax(amount):
     return amount * 0.10
 
+def generate_report(total_units, failed_attempts):
+    print("Total Deliveries Processed: " + str(total_units))
+    print("Number of Failed/Rejected Entries: " + str(failed_attempts))
+
+
 
 inventory = 0
 failed_entries = 0 
@@ -41,6 +46,4 @@ while True:
         print("OVERSTOCK ALERT: Total inventory of " + str(inventory) + " exceeds limit of 500 units!")
         break
 
-
-print("Total Units Processed: " + str(inventory))
-print("Number of Failed/Rejected Entries: "  +str(failed_entries))
+generate_report(inventory, failed_entries)
