@@ -1,3 +1,23 @@
+from pathlib import Path
+
+inventory_file_path = Path("inventory.txt")
+
+def load_inventory():
+    if not inventory_file_path.isfile():
+        return 0, []
+
+    inventory = 0
+    history = []
+
+    with open(inventory_file_path, "r") as file:
+        lines = [line.strip() for line in file.readlines() if line.strip()]
+
+        if lines:
+            inventory = int(lines[0])
+            history = [int(val) for val in lines[1:]]
+
+    return inventory, history
+
 def get_valid_inputs():
     global failed_entries
     while True:
@@ -47,3 +67,5 @@ while True:
         break
 
 generate_report(inventory, failed_entries)
+
+
