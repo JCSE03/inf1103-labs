@@ -18,6 +18,15 @@ def load_inventory():
 
     return inventory, history
 
+def save_inventory(inventory, history):
+    with open(inventory_file_path, "w") as file:
+        file.write(f"{inventory}\n")
+
+        for item in history:
+            file.write(f"{item}\n")
+
+    print("Inventory data sucessfully saved to inventory.txt")
+
 def get_valid_inputs():
     global failed_entries
     while True:
