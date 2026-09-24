@@ -3,7 +3,7 @@ from pathlib import Path
 inventory_file_path = Path("inventory.txt")
 
 def load_inventory():
-    if not inventory_file_path.isfile():
+    if not inventory_file_path.is_file():
         return 0, []
 
     inventory = 0
@@ -51,14 +51,18 @@ def process_delivery(current_total, new_value):
 def calculate_tax(amount):
     return amount * 0.10
 
-def generate_report(total_units, failed_attempts):
+def generate_report(total_units, failed_attempts, history):
     print("Total Deliveries Processed: " + str(total_units))
     print("Number of Failed/Rejected Entries: " + str(failed_attempts))
+    print("Transaction History : " + str(history))
 
 
-
-inventory = 0
+inventory, history = load_inventory()
 failed_entries = 0 
+
+print(f"Initial Inventory Loaded: {inventory}")
+print(f"Previous Transactions: {history}\n")
+
 
 while True:
     val = get_valid_inputs()
@@ -70,11 +74,13 @@ while True:
     print("Tax for this delivery (10%): " + str(tax))
      
     inventory = process_delivery(inventory, val)
+    history.append(val)
 
     if inventory > 500:
         print("OVERSTOCK ALERT: Total inventory of " + str(inventory) + " exceeds limit of 500 units!")
         break
 
-generate_report(inventory, failed_entries)
+save_inventory(inventory, history)
+generate_report(inventory, failed_entries, history)
 
 
