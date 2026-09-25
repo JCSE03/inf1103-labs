@@ -1,6 +1,6 @@
 from pathlib import Path
 
-orders_file_path = Path("week 4") / "orders.txt"
+orders_file_path = Path(__file__).resolve().parent / "inventory.txt"
 
 
 def load_inventory():
@@ -8,7 +8,7 @@ def load_inventory():
     if not orders_file_path.is_file():
         return orders
 
-    with open(orders_file_path, "r") as file:
+    with open(orders_file_path, "r", encoding="utf-8") as file:
         for line in file:
             line = line.strip()
             if line:
@@ -22,7 +22,8 @@ def load_inventory():
     return orders
 
 def save_inventory(orders):
-    with open(orders_file_path, "w") as file:
+    orders_file_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(orders_file_path, "w", encoding="utf-8") as file:
         for order_id, name, qty in orders:
             file.write(f"{order_id},{name},{qty}\n")
 
@@ -37,25 +38,28 @@ def display_orders(orders):
         print()
 
 orders = load_inventory()
-
 display_orders(orders)
 
+while True:
+    product_name = input("Enter Product Name (or 'quit' to exit): ").strip()
+    
+    if product_name.lower() == "quit":
+        break
 
-product_name = input("Enter Product Name: ").strip()
-quantity = input("Enter Quantity: ").strip()
+    quantity = input("Enter Quantity: ").strip()
 
-if quantity.isdigit():
-    quantity = int(quantity)
+    if quantity.isdigit():
+        quantity = int(quantity)
 
-    next_id = orders[-1][0] + 1 if orders else 1001
+        next_id = orders[-1][0] + 1 if orders else 1001
 
-    new_order = (next_id, product_name, quantity)
-    orders.append(new_order)
+        new_order = (next_id, product_name, quantity)
+        orders.append(new_order)
 
-    print("\nNew Order Added:")
-    print(f"{next_id},{product_name},{quantity}\n")
+        print("\nNew Order Added:")
+        print(f"{next_id},{product_name},{quantity}\n")
 
-    save_inventory(orders)
-    print("Order successfully saved to orders.txt")
-else:
-    print("Error: Quantity must be a valid number.")
+        save_inventory(orders)
+        print(f"Order successfully saved to {orders_file_path.name}\n")
+    else:
+        print("Error: Quantity must be a valid number.\n")
