@@ -21,6 +21,11 @@ def load_inventory():
 
     return orders
 
+def save_inventory(orders):
+    with open(orders_file_path, "w") as file:
+        for order_id, name, qty in orders:
+            file.write(f"{order_id},{name},{qty}\n")
+
 
 def display_orders(orders):
     print("Current Orders:\n")
@@ -50,6 +55,7 @@ if quantity.isdigit():
     print("\nNew Order Added:")
     print(f"{next_id},{product_name},{quantity}\n")
 
+    save_inventory(orders)
     print("Order successfully saved to orders.txt")
 else:
     print("Error: Quantity must be a valid number.")
