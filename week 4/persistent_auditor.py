@@ -20,3 +20,36 @@ def load_inventory():
                     orders.append((order_id, name, qty))
 
     return orders
+
+
+def display_orders(orders):
+    print("Current Orders:\n")
+    if not orders:
+        print("(No orders found)\n")
+    else:
+        for order_id, name, qty in orders:
+            print(f"{order_id}, {name}, {qty}")
+        print()
+
+orders = load_inventory()
+
+display_orders(orders)
+
+
+product_name = input("Enter Product Name: ").strip()
+quantity = input("Enter Quantity: ").strip()
+
+if quantity.isdigit():
+    quantity = int(quantity)
+
+    next_id = orders[-1][0] + 1 if orders else 1001
+
+    new_order = (next_id, product_name, quantity)
+    orders.append(new_order)
+
+    print("\nNew Order Added:")
+    print(f"{next_id},{product_name},{quantity}\n")
+
+    print("Order successfully saved to orders.txt")
+else:
+    print("Error: Quantity must be a valid number.")
