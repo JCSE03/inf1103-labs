@@ -1,6 +1,6 @@
 from pathlib import Path
 
-orders_file_path = Path("orders.txt")
+orders_file_path = Path("week 4") / "orders.txt"
 
 
 def load_inventory():
