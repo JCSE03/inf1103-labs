@@ -5,9 +5,9 @@ import json
 
 # List / Array
 inventory = [
-    {"id": "P001", "name": "Laptop",   "price": 1200.00, "stock": 15},
-    {"id": "P002", "name": "Mouse",    "price": 25.50,   "stock": 40},
-    {"id": "P003", "name": "Keyboard", "price": 45.00,   "stock": 25},
+    # {"id": "P001", "name": "Laptop",   "price": 1200.00, "stock": 15},
+    # {"id": "P002", "name": "Mouse",    "price": 25.50,   "stock": 40},
+    # {"id": "P003", "name": "Keyboard", "price": 45.00,   "stock": 25},
 ]
 
 def find_product(product_id):
@@ -118,11 +118,56 @@ def save_inventory():
 
 ## run once for testing (works)
 # if __name__ == "__main__":
-#     # Start from the three sample products
-#     # no load_inventory() here, because it would reset the list to empty when no file exists yet
-#     inventory = [
-#         {"id": "P001", "name": "Laptop",   "price": 1200.00, "stock": 15},
-#         {"id": "P002", "name": "Mouse",    "price": 25.50,   "stock": 40},
-#         {"id": "P003", "name": "Keyboard", "price": 45.00,   "stock": 25},
-#     ]
-#     save_inventory()   # writes the 3 products to inventory.json
+    # Start from the three sample products
+    # no load_inventory() here, because it would reset the list to empty when no file exists yet
+    # inventory = [
+    #     {"id": "P001", "name": "Laptop",   "price": 1200.00, "stock": 15},
+    #     {"id": "P002", "name": "Mouse",    "price": 25.50,   "stock": 40},
+    #     {"id": "P003", "name": "Keyboard", "price": 45.00,   "stock": 25},
+    # ]
+    # save_inventory()   # writes the 3 products to inventory.json
+    # load_inventory()
+
+
+## main program
+def main():
+    print("=" * 40)
+    print("INVENTORY MANAGEMENT SYSTEM")
+    print("=" * 40)
+
+    load_inventory()   # restore saved data when the program starts
+
+    while True:        # keep showing the menu until the user exits
+        print("\n----------- MENU -----------")
+        print("1. Display All Products")
+        print("2. Add Product")
+        print("3. Update Stock")
+        print("4. Search Product")
+        print("5. Save Inventory")
+        print("6. Exit")
+        print("----------------------------")
+        choice = input("Enter option: ").strip()
+
+        if choice == "1":
+            display_all()
+        elif choice == "2":
+            add_product()
+        elif choice == "3":
+            update_stock()
+        elif choice == "4":
+            search_product()
+        elif choice == "5":
+            save_inventory()
+        elif choice == "6":
+            print("Saving inventory before exit...")
+            save_inventory()
+            print("Thank you for using Inventory Management System.")
+            print("Program terminated.")
+            break      # leave the loop -> program ends
+        else:
+            print("Invalid option. Please choose 1-6.")
+
+
+# Only run main() when this file is executed directly
+if __name__ == "__main__":
+    main()
