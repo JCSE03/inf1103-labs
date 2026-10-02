@@ -1,3 +1,7 @@
+import os
+import json
+
+## Week 5 Lab Phase 1
 
 # List / Array
 inventory = [
@@ -86,6 +90,39 @@ def display_all():
         print(f"ID: {p['id']} | Name: {p['name']} | Price: ${p['price']:.2f} | Stock: {p['stock']}")
     print("-" * 48)
 
-# for testing
-if __name__ == "__main__":
-    display_all()
+
+## Week 5 lab phase 2
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__)) # find the current filepath
+DATA_DIR = os.environ.get("DATA_DIR", SCRIPT_DIR) # DATA_DIR defaults to the script's folder. Docker can override it with an environment variable
+INVENTORY_FILE = os.path.join(DATA_DIR, "inventory.json")
+
+def load_inventory():
+    """Load inventory.json if it exists, otherwise start with an empty inventory."""
+    global inventory  # we are replacing the whole list, so we need to global it
+
+    if os.path.exists(INVENTORY_FILE):
+        print("inventory.json found.")
+        with open(INVENTORY_FILE, "r") as f:
+            inventory = json.load(f)   # JSON file -> Python list of dicts
+        print("Inventory loaded successfully.")
+    else:
+        print("inventory.json not found. Starting with an empty inventory.")
+        inventory = []
+
+def save_inventory():
+    """Write the current inventory to inventory.json."""
+    print("Saving inventory...")
+    with open(INVENTORY_FILE, "w") as f:
+        json.dump(inventory, f, indent=4)   # indent=4 makes the file readable
+    print("Inventory saved successfully to inventory.json.")
+
+## run once for testing (works)
+# if __name__ == "__main__":
+#     # Start from the three sample products
+#     # no load_inventory() here, because it would reset the list to empty when no file exists yet
+#     inventory = [
+#         {"id": "P001", "name": "Laptop",   "price": 1200.00, "stock": 15},
+#         {"id": "P002", "name": "Mouse",    "price": 25.50,   "stock": 40},
+#         {"id": "P003", "name": "Keyboard", "price": 45.00,   "stock": 25},
+#     ]
+#     save_inventory()   # writes the 3 products to inventory.json
