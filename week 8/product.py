@@ -64,6 +64,31 @@ class Product:
         print(f"ID: {self.__product_id} | Name: {self.__name} | "
               f"Price: ${self.__price:.2f} | Stock: {self.__stock}")
 
+    # ---------- Conversion helpers (for saving/loading) ----------
+    # These only CONVERT data; they don't open or write files.
+    # File reading/writing stays in file_handler.py (Single Responsibility Principle).
+
+    def to_dict(self):
+        """Return this product as a dictionary so it can be written to JSON.
+
+        Uses the same keys as Week 5, so the existing inventory.json still works.
+        """
+        return {
+            "id": self.__product_id,
+            "name": self.__name,
+            "price": self.__price,
+            "stock": self.__stock,
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        """Create a new Product from a dictionary (e.g. one entry read from JSON).
+
+        @classmethod means this is called on the class itself: Product.from_dict(...)
+        'cls' is the Product class, so cls(...) is the same as Product(...).
+        """
+        return cls(data["id"], data["name"], data["price"], data["stock"])
+
 
 # ---------- Quick test ----------
 # Only runs when this file is executed directly (python product.py),
@@ -93,3 +118,8 @@ if __name__ == "__main__":
 
     # Display the product's information
     laptop.display_information()  # ID: P001 | Name: Laptop | Price: $1200.00 | Stock: 50
+
+    # Convert to a dictionary and back again (round trip)
+    print("to_dict:", laptop.to_dict())  # {'id': 'P001', 'name': 'Laptop', 'price': 1200.0, 'stock': 50}
+    copy = Product.from_dict(laptop.to_dict())
+    copy.display_information()  # same line as above
