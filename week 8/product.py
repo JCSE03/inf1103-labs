@@ -9,7 +9,7 @@ class Product:
         The self.__ names below are ATTRIBUTES: data stored inside this object.
         """
         # Double underscore (__) marks the attribute as private
-        # Outside code should read these through the getters below and change stock only through methods we add in the next commit.
+        # Outside code should read these through the getters below and change stock only through update_stock().
         self.__product_id = product_id.upper()  # keep IDs consistent, e.g. "p001" -> "P001"
         self.__name = name
         self.__price = price
@@ -39,6 +39,31 @@ class Product:
         """Return how many units are in stock."""
         return self.__stock
 
+    # ---------- Methods ----------
+
+    def update_stock(self, quantity):
+        """Set the stock to a new quantity, but only if the value is valid.
+
+        This is encapsulation in action: outside code can't write any value it likes into __stock.
+        It has to go through this method, and the Product decides what is acceptable.
+        """
+        # bool counts as an int in Python (True == 1), so reject it explicitly
+        if not isinstance(quantity, int) or isinstance(quantity, bool):
+            raise ValueError("Stock must be a whole number.")
+
+        # A shop can't hold a negative number of items
+        if quantity < 0:
+            raise ValueError("Stock cannot be negative.")
+
+        # Value passed every check, so it's safe to store
+        self.__stock = quantity
+
+    def display_information(self):
+        """Print this product's details on one line."""
+        # :.2f shows the price with exactly 2 decimal places
+        print(f"ID: {self.__product_id} | Name: {self.__name} | "
+              f"Price: ${self.__price:.2f} | Stock: {self.__stock}")
+
 
 # ---------- Quick test ----------
 # Only runs when this file is executed directly (python product.py),
@@ -54,3 +79,17 @@ if __name__ == "__main__":
     print("Real stock is still:", laptop.stock)  # still 15
     # Name mangling: Python actually stores the private attribute under this name
     print("Mangled name:", laptop._Product__stock)  # 15
+
+    # The correct way to change stock: through the public method
+    laptop.update_stock(50)
+    print("After update_stock(50):", laptop.stock)  # 50
+
+    # Invalid value: the Product refuses it and the stock stays the same
+    try:
+        laptop.update_stock(-5)
+    except ValueError as error:
+        print("Rejected:", error)  # Rejected: Stock cannot be negative.
+    print("Stock unchanged:", laptop.stock)  # still 50
+
+    # Display the product's information
+    laptop.display_information()  # ID: P001 | Name: Laptop | Price: $1200.00 | Stock: 50
