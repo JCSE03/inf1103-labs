@@ -1,12 +1,22 @@
 from product import Product
+from can_be_shipped import CanBeShipped
 
 
-class PhysicalProduct(Product):
+class PhysicalProduct(Product, CanBeShipped):
     """A product that physically exists, e.g. a laptop or a guitar.
 
     It is-a Product, so it inherits the ID, name, price, stock and all of
     Product's methods. The only new data it adds is the weight.
+
+    It also implements the CanBeShipped interface. This is still single
+    inheritance: Product is the only parent CLASS, while CanBeShipped is just a
+    contract with no data or code of its own.
     """
+
+    # Shipping rule: a flat handling fee plus a charge for every kg.
+    # Kept as class constants so the rates are easy to find and change.
+    BASE_SHIPPING_FEE = 5.00
+    SHIPPING_RATE_PER_KG = 2.00
 
     def __init__(self, product_id, name, price, stock, weight):
         """Create a physical product: the usual Product details plus a weight (kg)."""
@@ -42,6 +52,10 @@ class PhysicalProduct(Product):
         """Physical products have to be packed and shipped."""
         return "Requires physical shipping to the customer's address."
 
+    def calculate_shipping_cost(self):
+        """Fulfil the CanBeShipped contract: shipping = base fee + rate x weight."""
+        return self.BASE_SHIPPING_FEE + self.SHIPPING_RATE_PER_KG * self.__weight
+
 
 # ---------- Quick test ----------
 if __name__ == "__main__":
@@ -55,6 +69,11 @@ if __name__ == "__main__":
     guitar.update_stock(8)
     guitar.display_information()
     print("Fulfilment:", guitar.get_fulfilment_info())
+
+    # Shipping cost for a few different weights: $5 + $2/kg
+    for kg in (0, 1.5, 10):
+        item = PhysicalProduct("P103", "Test Box", 1.00, 1, kg)
+        print(f"Shipping for {kg} kg: ${item.calculate_shipping_cost():.2f}")  # $5.00, $8.00, $25.00
 
     # A negative weight should be rejected by the constructor
     try:
