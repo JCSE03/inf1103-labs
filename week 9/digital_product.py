@@ -26,10 +26,9 @@ class DigitalProduct(Product):
         return self.__download_size
 
     def display_information(self):
-        """Print this product's details, including its download size."""
-        print(f"ID: {self.product_id} | Name: {self.name} | "
-              f"Price: ${self.price:.2f} | Stock: {self.stock} | "
-              f"Download Size: {self.__download_size} MB")
+        """Override: show the common product details, then the download size."""
+        super().display_information()  # parent prints the shared details
+        print(f"    Download Size: {self.__download_size} MB")
 
 
 # ---------- Quick test ----------

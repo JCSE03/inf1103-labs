@@ -29,12 +29,14 @@ class PhysicalProduct(Product):
         return self.__weight
 
     def display_information(self):
-        """Print this product's details, including its weight."""
-        # Product's attributes are private to Product, so even a subclass has to
-        # read them through the getters (self.name, not self.__name)
-        print(f"ID: {self.product_id} | Name: {self.name} | "
-              f"Price: ${self.price:.2f} | Stock: {self.stock} | "
-              f"Weight: {self.__weight} kg")
+        """Override: show the common product details, then the weight.
+
+        Product already prints ID, name, price and stock, so rather than
+        repeating that line here we let the parent do its part and only add
+        what is unique to a physical product.
+        """
+        super().display_information()
+        print(f"    Weight: {self.__weight} kg")
 
 
 # ---------- Quick test ----------
