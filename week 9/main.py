@@ -1,13 +1,15 @@
-from product import Product
+from physical_product import PhysicalProduct
+from digital_product import DigitalProduct
+from can_be_shipped import CanBeShipped
 from file_handler import load_inventory, save_inventory
 
 ## Main program
-# Responsibilities: display the menu, get user input, and call the right Inventory methods.
-# It never reads or changes a Product's private data directly; it only uses getters and public methods.
+# Responsibilities: display the menu, get user input, and call the right Inventory/product methods.
+# It never reads or changes a product's private data directly; it only uses getters and public methods.
 
 
 def add_product(inventory):
-    """Ask the user for product details, create a Product object and add it to the inventory."""
+    """Ask the user for product details, create the right kind of product and add it to the inventory."""
     print("\nAdd New Product")
     product_id = input("Product ID: ").strip().upper()
 
@@ -18,16 +20,33 @@ def add_product(inventory):
 
     name = input("Product Name: ").strip()
 
-    # try/except stops the program crashing if the user types text instead of a number
+    # Product is abstract now, so the user has to pick a concrete type
+    print("Product Type:")
+    print("1. Physical Product")
+    print("2. Digital Product")
+    product_type = input("Choose type (1-2): ").strip()
+
+    if product_type not in ("1", "2"):
+        print("Invalid product type. Product not added.")
+        return
+
+    # One try block covers both kinds of bad input:
+    #  - float()/int() fail if the user types text instead of a number
+    #  - the product's constructor rejects values like a negative weight
     try:
         price = float(input("Price: "))
         stock = int(input("Stock Quantity: "))
-    except ValueError:
-        print("Invalid number entered. Product not added.")
-        return
 
-    # Create a Product OBJECT (Week 5 built a dictionary here instead)
-    product = Product(product_id, name, price, stock)
+        # Only ask for the extra detail that this product type actually needs
+        if product_type == "1":
+            weight = float(input("Weight (kg): "))
+            product = PhysicalProduct(product_id, name, price, stock, weight)
+        else:
+            download_size = float(input("Download Size (MB): "))
+            product = DigitalProduct(product_id, name, price, stock, download_size)
+    except ValueError as error:
+        print(f"Invalid input ({error}). Product not added.")
+        return
 
     # Inventory returns True/False; main decides what message to show
     if inventory.add_product(product):
@@ -37,7 +56,7 @@ def add_product(inventory):
 
 
 def update_stock(inventory):
-    """Find a product by ID and change its stock through Product.update_stock()."""
+    """Find a product by ID and change its stock through update_stock()."""
     print("\nUpdate Stock")
     product = inventory.search_product(input("Enter Product ID: "))
 
@@ -57,7 +76,7 @@ def update_stock(inventory):
         print("Invalid number entered. Stock not changed.")
         return
 
-    # Step 2: the Product's job is deciding whether that number is ALLOWED (e.g. not negative)
+    # Step 2: the product's job is deciding whether that number is ALLOWED (e.g. not negative)
     try:
         product.update_stock(new_stock)
         print("Stock updated successfully!")
@@ -66,7 +85,7 @@ def update_stock(inventory):
 
 
 def search_product(inventory):
-    """Search for one product by ID and display its details."""
+    """Search for one product by ID and display its details, fulfilment and shipping info."""
     print("\nSearch Product")
     product = inventory.search_product(input("Enter Product ID: "))
 
@@ -76,7 +95,12 @@ def search_product(inventory):
 
     print("Product Found")
     print("-" * 48)
-    product.display_information()  # the Product displays itself
+    product.display_information()  # the subclass's overridden version runs automatically
+    print(f"Fulfilment: {product.get_fulfilment_info()}")
+
+    # Only products that signed the CanBeShipped contract have a shipping cost
+    if isinstance(product, CanBeShipped):
+        print(f"Shipping Cost: ${product.calculate_shipping_cost():.2f}")
     print("-" * 48)
 
 
@@ -86,7 +110,7 @@ def main():
     print("INVENTORY MANAGEMENT SYSTEM")
     print("=" * 40)
 
-    # load_inventory() returns a ready-to-use Inventory object filled with Product objects
+    # load_inventory() returns a ready-to-use Inventory filled with Physical/Digital product objects
     inventory = load_inventory()
 
     while True:  # keep showing the menu until the user exits
