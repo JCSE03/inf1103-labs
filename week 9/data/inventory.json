@@ -3,36 +3,64 @@
         "id": "P001",
         "name": "Laptop",
         "price": 1200.0,
-        "stock": 15
+        "stock": 15,
+        "type": "physical",
+        "weight": 2.2
     },
     {
         "id": "P002",
         "name": "Mouse",
         "price": 25.5,
-        "stock": 60
+        "stock": 60,
+        "type": "physical",
+        "weight": 0.1
     },
     {
         "id": "P003",
         "name": "Keyboard",
         "price": 45.0,
-        "stock": 25
+        "stock": 25,
+        "type": "physical",
+        "weight": 0.8
     },
     {
         "id": "P004",
         "name": "Monitor",
         "price": 299.99,
-        "stock": 10
+        "stock": 10,
+        "type": "physical",
+        "weight": 5.5
     },
     {
         "id": "P005",
         "name": "Table",
         "price": 99.99,
-        "stock": 10
+        "stock": 10,
+        "type": "physical",
+        "weight": 15.0
     },
     {
         "id": "P006",
         "name": "Chair",
         "price": 40.0,
-        "stock": 30
+        "stock": 30,
+        "type": "physical",
+        "weight": 7.0
+    },
+    {
+        "id": "D001",
+        "name": "Antivirus Pro",
+        "price": 59.9,
+        "stock": 100,
+        "type": "digital",
+        "download_size": 850.0
+    },
+    {
+        "id": "D002",
+        "name": "Python Programming E-book",
+        "price": 29.9,
+        "stock": 50,
+        "type": "digital",
+        "download_size": 12.5
     }
 ]

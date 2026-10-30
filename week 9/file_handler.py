@@ -1,10 +1,11 @@
 import os
 import json
 
-from product import Product
 from inventory import Inventory
+from physical_product import PhysicalProduct
+from digital_product import DigitalProduct
 
-#File handling
+# File handling
 # Single responsibility: load and save inventory data.
 # Plain functions (no class needed yet; the lab says a file-handling class is optional).
 
@@ -16,6 +17,15 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.environ.get("DATA_DIR", os.path.join(SCRIPT_DIR, "data"))
 
 INVENTORY_FILE = os.path.join(DATA_DIR, "inventory.json")
+
+# ---------- Product types ----------
+# Maps the "type" label stored in JSON to the class that should be rebuilt.
+# Using a lookup table instead of an if/elif chain means a new product type
+# only needs one extra line here.
+PRODUCT_TYPES = {
+    "physical": PhysicalProduct,
+    "digital": DigitalProduct,
+}
 
 
 def load_inventory():
@@ -33,9 +43,16 @@ def load_inventory():
     with open(INVENTORY_FILE, "r") as f:
         data = json.load(f)  # JSON file -> Python list of dictionaries
 
-    # Turn each dictionary back into a Product object and add it to the inventory
     for item in data:
-        inventory.add_product(Product.from_dict(item))
+        # Use the saved type label to pick the right subclass
+        product_class = PRODUCT_TYPES.get(item.get("type"))
+
+        # Skip anything we don't recognise rather than crashing the whole load
+        if product_class is None:
+            print(f"Skipping {item.get('id', '?')}: unknown product type '{item.get('type')}'.")
+            continue
+
+        inventory.add_product(product_class.from_dict(item))
 
     print("Inventory loaded successfully.")
     return inventory
@@ -48,7 +65,7 @@ def save_inventory(inventory):
     # Create the data folder if it doesn't exist yet (exist_ok=True means no error if it does)
     os.makedirs(DATA_DIR, exist_ok=True)
 
-    # Turn each Product object into a dictionary, because JSON can't store objects directly
+    # Each product converts itself, so the subclass's to_dict() adds its own type and extra field
     data = [product.to_dict() for product in inventory.get_all_products()]
 
     with open(INVENTORY_FILE, "w") as f:
@@ -62,9 +79,9 @@ def save_inventory(inventory):
 if __name__ == "__main__":
     print("Reading from:", INVENTORY_FILE)
 
-    # Load the existing JSON file into Product objects and show them
+    # Load the JSON file into the correct product subclasses and show them
     inventory = load_inventory()
     inventory.display_all()
 
-    # Save it straight back. the file content should come out identical
+    # Save it straight back; the file content should come out identical
     save_inventory(inventory)

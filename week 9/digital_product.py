@@ -34,6 +34,23 @@ class DigitalProduct(Product):
         """Digital products are delivered online, so nothing is shipped."""
         return "Delivered digitally via a download link sent to the customer's email."
 
+    # ---------- Conversion helpers (for saving/loading) ----------
+
+    def to_dict(self):
+        """Extend Product's dictionary with this product's type label and download size.
+
+        The "type" label is what lets file_handler rebuild the right subclass later.
+        """
+        data = super().to_dict()  # id, name, price, stock
+        data["type"] = "digital"
+        data["download_size"] = self.__download_size
+        return data
+
+    @classmethod
+    def from_dict(cls, data):
+        """Rebuild a DigitalProduct from one JSON entry."""
+        return cls(data["id"], data["name"], data["price"], data["stock"], data["download_size"])
+
 
 # ---------- Quick test ----------
 if __name__ == "__main__":
