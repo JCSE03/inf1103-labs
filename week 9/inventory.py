@@ -66,28 +66,29 @@ class Inventory:
 # Only runs when this file is executed directly (python inventory.py)
 if __name__ == "__main__":
     # Imported here because only the test needs to CREATE products;
-    # the Inventory class itself just works with whatever Product objects it is given
-    from product import Product
+    # the Inventory class itself just works with whatever product objects it is given.
+    # Product is abstract now, so the test uses the concrete subclasses instead.
+    from physical_product import PhysicalProduct
+    from digital_product import DigitalProduct
 
-    # Same example as the lab sheet (section 2.6)
-    inventory = Inventory()                              # create the inventory object
-    product1 = Product("P001", "Laptop", 1200.00, 15)    # create products via __init__
-    product2 = Product("P002", "Mouse", 25.50, 40)
+    inventory = Inventory()
+    product1 = PhysicalProduct("P001", "Laptop", 1200.00, 15, 2.2)
+    product2 = DigitalProduct("D001", "Antivirus Pro", 59.90, 100, 850)
 
     print("Add P001:", inventory.add_product(product1))  # True
-    print("Add P002:", inventory.add_product(product2))  # True
+    print("Add D001:", inventory.add_product(product2))  # True
 
-    # Duplicate ID should be refused
-    duplicate = Product("p001", "Another Laptop", 999.00, 1)
+    # Duplicate ID should be refused, whatever the product type
+    duplicate = PhysicalProduct("p001", "Another Laptop", 999.00, 1, 2.0)
     print("Add duplicate P001:", inventory.add_product(duplicate))  # False
 
     # Search works with lowercase and extra spaces
-    found = inventory.search_product(" p002 ")
-    print("\nSearch ' p002 ':")
-    found.display_information()  # ID: P002 | Name: Mouse | Price: $25.50 | Stock: 40
+    found = inventory.search_product(" d001 ")
+    print("\nSearch ' d001 ':")
+    found.display_information()  # the DigitalProduct version runs, so the download size is shown
 
     # Searching for something that doesn't exist returns None
     print("Search P999:", inventory.search_product("P999"))  # None
 
-    # Display everything
+    # Display everything: Inventory calls display_information() without knowing each product's type
     inventory.display_all()

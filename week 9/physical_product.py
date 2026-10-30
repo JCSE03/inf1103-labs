@@ -38,6 +38,10 @@ class PhysicalProduct(Product):
         super().display_information()
         print(f"    Weight: {self.__weight} kg")
 
+    def get_fulfilment_info(self):
+        """Physical products have to be packed and shipped."""
+        return "Requires physical shipping to the customer's address."
+
 
 # ---------- Quick test ----------
 if __name__ == "__main__":
@@ -50,6 +54,7 @@ if __name__ == "__main__":
     # Inherited method: update_stock() was never written in this class
     guitar.update_stock(8)
     guitar.display_information()
+    print("Fulfilment:", guitar.get_fulfilment_info())
 
     # A negative weight should be rejected by the constructor
     try:

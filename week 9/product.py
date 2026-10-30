@@ -1,12 +1,21 @@
-class Product:
-    """Blueprint for a single product in the inventory."""
+from abc import ABC, abstractmethod
+
+
+class Product(ABC):
+    """Abstract base class for every product in the inventory.
+
+    Holds the data and behaviour that ALL products share (ID, name, price, stock).
+    Every product must be either physical or digital, so Product itself cannot be
+    instantiated; only its subclasses (PhysicalProduct, DigitalProduct) can.
+    """
 
     def __init__(self, product_id, name, price, stock):
-        """Initializer (constructor): runs automatically when a Product object is created.
+        """Initializer (constructor): runs automatically when a product object is created.
 
         The names in the brackets (product_id, name, ...) are PARAMETERS:
         values passed in from outside.
         The self.__ names below are ATTRIBUTES: data stored inside this object.
+        Subclasses call this through super().__init__() instead of repeating it.
         """
         # Double underscore (__) marks the attribute as private
         # Outside code should read these through the getters below and change stock only through update_stock().
@@ -17,7 +26,7 @@ class Product:
 
     # ---------- Getters ----------
     # @property lets outside code READ a private attribute like a normal variable (product.name instead of product.get_name()), without being able to assign to it.
-    # Trying "product.name = 'x'" raises an AttributeError because there is no setter.
+    # Subclasses also use these, since they can't see Product's private attributes directly.
 
     @property
     def product_id(self):
@@ -39,7 +48,7 @@ class Product:
         """Return how many units are in stock."""
         return self.__stock
 
-    # ---------- Methods ----------
+    # ---------- Concrete methods (shared by every subclass) ----------
 
     def update_stock(self, quantity):
         """Set the stock to a new quantity, but only if the value is valid.
@@ -59,20 +68,32 @@ class Product:
         self.__stock = quantity
 
     def display_information(self):
-        """Print this product's details on one line."""
+        """Print the details every product has on one line.
+
+        Subclasses override this and call it with super() before adding their own details.
+        """
         # :.2f shows the price with exactly 2 decimal places
         print(f"ID: {self.__product_id} | Name: {self.__name} | "
               f"Price: ${self.__price:.2f} | Stock: {self.__stock}")
 
-    # ---------- Conversion helpers (for saving/loading) ----------
-    # These only CONVERT data; they don't open or write files.
-    # File reading/writing stays in file_handler.py (Single Responsibility Principle).
+    # ---------- Abstract method (each subclass MUST implement) ----------
+
+    @abstractmethod
+    def get_fulfilment_info(self):
+        """Return a short message describing how this product reaches the customer.
+
+        No implementation here on purpose: a physical product is shipped, a digital
+        one is downloaded, so only the subclass knows the right answer.
+        """
+        pass
+
+    # ---------- Conversion helper (for saving) ----------
+    # Only CONVERTS data; file reading/writing stays in file_handler.py (Single Responsibility Principle).
+    # from_dict() has moved into the subclasses: Product can no longer be created
+    # directly, and each subclass needs its own extra value (weight / download size).
 
     def to_dict(self):
-        """Return this product as a dictionary so it can be written to JSON.
-
-        Uses the same keys as Week 5, so the existing inventory.json still works.
-        """
+        """Return the shared product fields as a dictionary so they can be written to JSON."""
         return {
             "id": self.__product_id,
             "name": self.__name,
@@ -80,46 +101,13 @@ class Product:
             "stock": self.__stock,
         }
 
-    @classmethod
-    def from_dict(cls, data):
-        """Create a new Product from a dictionary (e.g. one entry read from JSON).
-
-        @classmethod means this is called on the class itself: Product.from_dict(...)
-        'cls' is the Product class, so cls(...) is the same as Product(...).
-        """
-        return cls(data["id"], data["name"], data["price"], data["stock"])
-
 
 # ---------- Quick test ----------
-# Only runs when this file is executed directly (python product.py),
-# NOT when another file does "from product import Product".
+# Only runs when this file is executed directly (python product.py)
 if __name__ == "__main__":
-    laptop = Product("p001", "Laptop", 1200.00, 15)
-
-    # Reading values through the getters
-    print(laptop.product_id, laptop.name, laptop.price, laptop.stock)  # P001 Laptop 1200.0 15
-
-    # this does NOT change the real private stock, it silently creates a NEW attribute
-    laptop.__stock = 50
-    print("Real stock is still:", laptop.stock)  # still 15
-    # Name mangling: Python actually stores the private attribute under this name
-    print("Mangled name:", laptop._Product__stock)  # 15
-
-    # The correct way to change stock: through the public method
-    laptop.update_stock(50)
-    print("After update_stock(50):", laptop.stock)  # 50
-
-    # Invalid value: the Product refuses it and the stock stays the same
+    # Product is abstract, so creating one directly should fail with a TypeError
     try:
-        laptop.update_stock(-5)
-    except ValueError as error:
-        print("Rejected:", error)  # Rejected: Stock cannot be negative.
-    print("Stock unchanged:", laptop.stock)  # still 50
-
-    # Display the product's information
-    laptop.display_information()  # ID: P001 | Name: Laptop | Price: $1200.00 | Stock: 50
-
-    # Convert to a dictionary and back again (round trip)
-    print("to_dict:", laptop.to_dict())  # {'id': 'P001', 'name': 'Laptop', 'price': 1200.0, 'stock': 50}
-    copy = Product.from_dict(laptop.to_dict())
-    copy.display_information()  # same line as above
+        generic = Product("P001", "Mystery Item", 10.00, 1)
+    except TypeError as error:
+        print("Cannot create a plain Product:")
+        print(error)

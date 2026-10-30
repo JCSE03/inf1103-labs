@@ -30,6 +30,10 @@ class DigitalProduct(Product):
         super().display_information()  # parent prints the shared details
         print(f"    Download Size: {self.__download_size} MB")
 
+    def get_fulfilment_info(self):
+        """Digital products are delivered online, so nothing is shipped."""
+        return "Delivered digitally via a download link sent to the customer's email."
+
 
 # ---------- Quick test ----------
 if __name__ == "__main__":
@@ -37,6 +41,7 @@ if __name__ == "__main__":
 
     print(antivirus.product_id, antivirus.name, antivirus.download_size)  # D201 Antivirus Pro 850
     antivirus.display_information()
+    print("Fulfilment:", antivirus.get_fulfilment_info())
 
     try:
         DigitalProduct("D202", "Bad Download", 5.00, 1, -10)
