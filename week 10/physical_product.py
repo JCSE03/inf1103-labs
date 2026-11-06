@@ -70,6 +70,6 @@ class PhysicalProduct(Product, CanBeShipped):
         return data
 
     @classmethod
-    def from_dict(cls, data: dict) -> "PhysicalProduct":
+    def from_dict(cls, data: dict, supplier: Supplier) -> "PhysicalProduct":
         """Rebuild a PhysicalProduct from one JSON entry."""
-        return cls(data["id"], data["name"], data["price"], data["stock"], data["weight"])
+        return cls(data["id"], data["name"], data["price"], data["stock"], supplier, data["weight"])

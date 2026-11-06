@@ -105,4 +105,5 @@ class Product(ABC):
             "name": self.__name,
             "price": self.__price,
             "stock": self.__stock,
+            "supplier_id": self.__supplier.supplier_id,
         }

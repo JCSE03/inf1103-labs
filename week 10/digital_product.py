@@ -47,6 +47,6 @@ class DigitalProduct(Product):
         return data
 
     @classmethod
-    def from_dict(cls, data: dict) -> "DigitalProduct":
+    def from_dict(cls, data: dict, supplier: Supplier) -> "DigitalProduct":
         """Rebuild a DigitalProduct from one JSON entry."""
-        return cls(data["id"], data["name"], data["price"], data["stock"], data["download_size"])
+        return cls(data["id"], data["name"], data["price"], data["stock"], supplier, data["download_size"])

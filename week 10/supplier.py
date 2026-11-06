@@ -7,7 +7,7 @@ class Supplier:
 
     def __init__(self, supplier_id: str, name: str, contact_email: str) -> None:
 
-        self.__supplier_id = supplier_id
+        self.__supplier_id = supplier_id.upper()
         self.__name = name
         self.__contact_email = contact_email
 
@@ -25,4 +25,20 @@ class Supplier:
 
 
     def display_information(self) -> None:
-        print(f"ID: {self.__supplier_id} | Name: {self.__name} | Contact Email: {self.__contact_email}")
+        print(f"Supplier ID: {self.__supplier_id} | Name: {self.__name} | Contact Email: {self.__contact_email}")
+
+    # ---------- Conversion helpers (for saving/loading) ----------
+    # Only CONVERTS data; reading/writing the file stays in file_handler.py (SRP).
+
+    def to_dict(self) -> dict:
+        """Return this supplier's details as a dictionary so they can be written to JSON."""
+        return {
+            "id": self.__supplier_id,
+            "name": self.__name,
+            "contact_email": self.__contact_email,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Supplier":
+        """Rebuild a Supplier from one JSON entry."""
+        return cls(data["id"], data["name"], data["contact_email"])
