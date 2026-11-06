@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+from supplier import Supplier
 
 class Product(ABC):
     """Abstract base class for every product in the inventory.
@@ -9,7 +9,7 @@ class Product(ABC):
     instantiated; only its subclasses (PhysicalProduct, DigitalProduct) can.
     """
 
-    def __init__(self, product_id, name, price, stock):
+    def __init__(self, product_id: str, name: str, price: float, stock: int, supplier: Supplier) -> None:
         """Initializer (constructor): runs automatically when a product object is created.
 
         The names in the brackets (product_id, name, ...) are PARAMETERS:
@@ -23,34 +23,40 @@ class Product(ABC):
         self.__name = name
         self.__price = price
         self.__stock = stock
+        self.__supplier = supplier
 
     # ---------- Getters ----------
     # @property lets outside code READ a private attribute like a normal variable (product.name instead of product.get_name()), without being able to assign to it.
     # Subclasses also use these, since they can't see Product's private attributes directly.
 
     @property
-    def product_id(self):
+    def product_id(self) -> str:
         """Return the product's ID."""
         return self.__product_id
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return the product's name."""
         return self.__name
 
     @property
-    def price(self):
+    def price(self) -> float:
         """Return the product's price."""
         return self.__price
 
     @property
-    def stock(self):
+    def stock(self) -> int:
         """Return how many units are in stock."""
         return self.__stock
 
+    @property
+    def supplier(self) -> Supplier:
+        """returns the product's supplier"""
+        return self.__supplier
+
     # ---------- Concrete methods (shared by every subclass) ----------
 
-    def update_stock(self, quantity):
+    def update_stock(self, quantity: int) -> None:
         """Set the stock to a new quantity, but only if the value is valid.
 
         This is encapsulation in action: outside code can't write any value it likes into __stock.
@@ -67,7 +73,7 @@ class Product(ABC):
         # Value passed every check, so it's safe to store
         self.__stock = quantity
 
-    def display_information(self):
+    def display_information(self) -> None:
         """Print the details every product has on one line.
 
         Subclasses override this and call it with super() before adding their own details.
@@ -79,7 +85,7 @@ class Product(ABC):
     # ---------- Abstract method (each subclass MUST implement) ----------
 
     @abstractmethod
-    def get_fulfilment_info(self):
+    def get_fulfilment_info(self) -> str:
         """Return a short message describing how this product reaches the customer.
 
         No implementation here on purpose: a physical product is shipped, a digital
@@ -92,7 +98,7 @@ class Product(ABC):
     # from_dict() has moved into the subclasses: Product can no longer be created
     # directly, and each subclass needs its own extra value (weight / download size).
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         """Return the shared product fields as a dictionary so they can be written to JSON."""
         return {
             "id": self.__product_id,
@@ -100,14 +106,3 @@ class Product(ABC):
             "price": self.__price,
             "stock": self.__stock,
         }
-
-
-# ---------- Quick test ----------
-# Only runs when this file is executed directly (python product.py)
-if __name__ == "__main__":
-    # Product is abstract, so creating one directly should fail with a TypeError
-    try:
-        generic = Product("P001", "Mystery Item", 10.00, 1)
-    except TypeError as error:
-        print("Cannot create a plain Product:")
-        print(error)
