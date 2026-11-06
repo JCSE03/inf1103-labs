@@ -1,5 +1,5 @@
 from product import Product
-
+from supplier import Supplier
 
 class DigitalProduct(Product):
     """A product delivered as a download, e.g. software or an e-book.
@@ -8,10 +8,10 @@ class DigitalProduct(Product):
     one attribute it adds on top of Product.
     """
 
-    def __init__(self, product_id, name, price, stock, download_size):
+    def __init__(self, product_id: str, name: str, price: float, stock: int, supplier: Supplier, download_size: float) -> None:
         """Create a digital product: the usual Product details plus a download size (MB)."""
         # Reuse Product's constructor for the shared attributes
-        super().__init__(product_id, name, price, stock)
+        super().__init__(product_id, name, price, stock, supplier)
 
         if not isinstance(download_size, (int, float)) or isinstance(download_size, bool):
             raise ValueError("Download size must be a number.")
@@ -21,22 +21,22 @@ class DigitalProduct(Product):
         self.__download_size = download_size
 
     @property
-    def download_size(self):
+    def download_size(self) -> float:
         """Return the download size in megabytes."""
         return self.__download_size
 
-    def display_information(self):
+    def display_information(self) -> None:
         """Override: show the common product details, then the download size."""
         super().display_information()  # parent prints the shared details
         print(f"    Download Size: {self.__download_size} MB")
 
-    def get_fulfilment_info(self):
+    def get_fulfilment_info(self) -> str:
         """Digital products are delivered online, so nothing is shipped."""
         return "Delivered digitally via a download link sent to the customer's email."
 
     # ---------- Conversion helpers (for saving/loading) ----------
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         """Extend Product's dictionary with this product's type label and download size.
 
         The "type" label is what lets file_handler rebuild the right subclass later.
@@ -47,20 +47,6 @@ class DigitalProduct(Product):
         return data
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data: dict) -> "DigitalProduct":
         """Rebuild a DigitalProduct from one JSON entry."""
         return cls(data["id"], data["name"], data["price"], data["stock"], data["download_size"])
-
-
-# ---------- Quick test ----------
-if __name__ == "__main__":
-    antivirus = DigitalProduct("d201", "Antivirus Pro", 59.90, 100, 850)
-
-    print(antivirus.product_id, antivirus.name, antivirus.download_size)  # D201 Antivirus Pro 850
-    antivirus.display_information()
-    print("Fulfilment:", antivirus.get_fulfilment_info())
-
-    try:
-        DigitalProduct("D202", "Bad Download", 5.00, 1, -10)
-    except ValueError as error:
-        print("Rejected:", error)  # Rejected: Download size cannot be negative.
