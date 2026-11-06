@@ -14,7 +14,7 @@ def add_product(inventory):
     product_id = input("Product ID: ").strip().upper()
 
     # Check for a duplicate straight away, so the user isn't asked for details that will be thrown away
-    if inventory.search_product(product_id) is not None:
+    if inventory.find_product(product_id) is not None:
         print("A product with that ID already exists.")
         return
 
@@ -58,7 +58,7 @@ def add_product(inventory):
 def update_stock(inventory):
     """Find a product by ID and change its stock through update_stock()."""
     print("\nUpdate Stock")
-    product = inventory.search_product(input("Enter Product ID: "))
+    product = inventory.find_product(input("Enter Product ID: "))
 
     if product is None:
         print("Product not found.")
@@ -87,7 +87,7 @@ def update_stock(inventory):
 def search_product(inventory):
     """Search for one product by ID and display its details, fulfilment and shipping info."""
     print("\nSearch Product")
-    product = inventory.search_product(input("Enter Product ID: "))
+    product = inventory.find_product(input("Enter Product ID: "))
 
     if product is None:
         print("Product not found.")

@@ -1,34 +1,37 @@
+from product import Product  # only used for type hints: Inventory holds Product objects
+
 class Inventory:
     """Manages a collection of Product objects.
 
-    Single responsibility: store, add, search and display products.
+    Single responsibility: store, add, find, remove and display products.
     It does NOT load/save files, show the menu or ask for input,
     and it never touches a Product's private data directly.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initializer: every new Inventory starts with an empty list of products."""
-        # Private list that holds Product objects (not dictionaries like in Week 5)
-        self.__products = []
+        # Private list typed as list[Product], so ANY product subclass can be stored
+        self.__products: list[Product] = []
 
-    def add_product(self, product):
+    def add_product(self, product: Product) -> bool:
         """Add a Product to the inventory.
 
         Returns True if it was added, or False if a product with the same ID already exists.
         Returning True/False (instead of printing) lets the main program decide what message to show the user.
         """
-        # Prevent duplicate IDs: reuse search_product() rather than repeating the loop here
-        if self.search_product(product.product_id) is not None:
+        # Prevent duplicate IDs: reuse find_product() rather than repeating the loop here
+        if self.find_product(product.product_id) is not None:
             return False
 
         self.__products.append(product)
         return True
 
-    def search_product(self, product_id):
+    def find_product(self, product_id: str) -> Product | None:
         """Return the Product with a matching ID, or None if there isn't one.
 
-        Replaces Week 5's find_product() helper.
-        Returns the object instead of printing it, so both "Search" and "Update Stock" in the menu can use this method.
+        Renamed from search_product() to match the Lab 8 design.
+        Returns the object instead of printing it, so "Search", "Update Stock"
+        and remove_product() can all reuse this method.
         """
         # .strip() removes accidental spaces, .upper() makes "p001" match "P001"
         product_id = product_id.strip().upper()
@@ -40,7 +43,21 @@ class Inventory:
 
         return None  # nothing matched
 
-    def display_all(self):
+    def remove_product(self, product_id: str) -> Product | None:
+        """Remove a product from this inventory and hand it back, or return None if not found.
+
+        Aggregation: removing only drops the inventory's REFERENCE to the product.
+        The product object itself still exists, so it can be added to another inventory.
+        """
+        # Reuse find_product() so the ID cleaning (strip/upper) isn't repeated here
+        product = self.find_product(product_id)
+
+        if product is not None:
+            self.__products.remove(product)  # takes it out of the list; does NOT destroy it
+
+        return product  # the caller gets the same product object back
+
+    def display_all(self) -> None:
         """Print every product in the inventory."""
         print("\nCurrent Inventory")
         print("-" * 48)
@@ -54,41 +71,10 @@ class Inventory:
 
         print("-" * 48)
 
-    def get_all_products(self):
-        """Return a copy of the product list (used later for saving to JSON).
+    def get_all_products(self) -> list[Product]:
+        """Return a copy of the product list (used for saving to JSON).
 
-        A copy is returned so outside code can't add or remove items in the real list without going through add_product().
+        A copy is returned so outside code can't add or remove items in the real list
+        without going through add_product() / remove_product().
         """
         return list(self.__products)
-
-
-# ---------- Quick test ----------
-# Only runs when this file is executed directly (python inventory.py)
-if __name__ == "__main__":
-    # Imported here because only the test needs to CREATE products;
-    # the Inventory class itself just works with whatever product objects it is given.
-    # Product is abstract now, so the test uses the concrete subclasses instead.
-    from physical_product import PhysicalProduct
-    from digital_product import DigitalProduct
-
-    inventory = Inventory()
-    product1 = PhysicalProduct("P001", "Laptop", 1200.00, 15, 2.2)
-    product2 = DigitalProduct("D001", "Antivirus Pro", 59.90, 100, 850)
-
-    print("Add P001:", inventory.add_product(product1))  # True
-    print("Add D001:", inventory.add_product(product2))  # True
-
-    # Duplicate ID should be refused, whatever the product type
-    duplicate = PhysicalProduct("p001", "Another Laptop", 999.00, 1, 2.0)
-    print("Add duplicate P001:", inventory.add_product(duplicate))  # False
-
-    # Search works with lowercase and extra spaces
-    found = inventory.search_product(" d001 ")
-    print("\nSearch ' d001 ':")
-    found.display_information()  # the DigitalProduct version runs, so the download size is shown
-
-    # Searching for something that doesn't exist returns None
-    print("Search P999:", inventory.search_product("P999"))  # None
-
-    # Display everything: Inventory calls display_information() without knowing each product's type
-    inventory.display_all()
