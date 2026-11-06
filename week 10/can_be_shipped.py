@@ -13,7 +13,7 @@ class CanBeShipped(ABC):
     """
 
     @abstractmethod
-    def calculate_shipping_cost(self):
+    def calculate_shipping_cost(self) -> float:
         """Return the cost of shipping this item, in dollars.
 
         Each implementing class decides its own pricing rule.
