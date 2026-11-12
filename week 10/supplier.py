@@ -1,9 +1,7 @@
 class Supplier:
     """A company that supplies products to the store.
 
-    Association: a Product knows its Supplier, but neither owns the other,
-    so both can exist on their own
-    """
+    Association: a Product knows its Supplier, but neither owns the other, so both can exist on their own"""
 
     def __init__(self, supplier_id: str, name: str, contact_email: str) -> None:
 
@@ -27,8 +25,6 @@ class Supplier:
     def display_information(self) -> None:
         print(f"Supplier ID: {self.__supplier_id} | Name: {self.__name} | Contact Email: {self.__contact_email}")
 
-    # ---------- Conversion helpers (for saving/loading) ----------
-    # Only CONVERTS data; reading/writing the file stays in file_handler.py (SRP).
 
     def to_dict(self) -> dict:
         """Return this supplier's details as a dictionary so they can be written to JSON."""

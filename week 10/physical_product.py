@@ -14,24 +14,18 @@ class PhysicalProduct(Product, CanBeShipped):
     contract with no data or code of its own.
     """
 
-    # Shipping rule: a flat handling fee plus a charge for every kg.
-    # Kept as class constants so the rates are easy to find and change.
     BASE_SHIPPING_FEE: float = 5.00
     SHIPPING_RATE_PER_KG: float = 2.00
 
     def __init__(self, product_id: str, name: str, price: float, stock: int, supplier: Supplier, weight: float) -> None:
         """Create a physical product: the usual Product details plus a weight (kg)."""
-        # Hand the shared attributes to Product's constructor instead of
-        # setting them again here; Product already knows how to do this
         super().__init__(product_id, name, price, stock, supplier)
 
-        # Validate the weight the same way Product validates stock
         if not isinstance(weight, (int, float)) or isinstance(weight, bool):
             raise ValueError("Weight must be a number.")
         if weight < 0:
             raise ValueError("Weight cannot be negative.")
 
-        # Private to PhysicalProduct (Python stores it as _PhysicalProduct__weight)
         self.__weight = weight
 
     @property
@@ -57,14 +51,13 @@ class PhysicalProduct(Product, CanBeShipped):
         """Fulfil the CanBeShipped contract: shipping = base fee + rate x weight."""
         return self.BASE_SHIPPING_FEE + self.SHIPPING_RATE_PER_KG * self.__weight
 
-    # ---------- Conversion helpers (for saving/loading) ----------
 
     def to_dict(self) -> dict:
         """Extend Product's dictionary with this product's type label and weight.
 
         The "type" label is what lets file_handler rebuild the right subclass later.
         """
-        data = super().to_dict()  # id, name, price, stock
+        data = super().to_dict() 
         data["type"] = "physical"
         data["weight"] = self.__weight
         return data

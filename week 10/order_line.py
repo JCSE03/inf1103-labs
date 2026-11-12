@@ -1,4 +1,4 @@
-from product import Product  # only used for type hints
+from product import Product
 
 
 class OrderLine:
@@ -18,11 +18,10 @@ class OrderLine:
         if not isinstance(quantity, int) or isinstance(quantity, bool):
             raise ValueError("Quantity must be a whole number.")
 
-        # An order line for zero (or fewer) items makes no sense
         if quantity <= 0:
             raise ValueError("Quantity must be at least 1.")
 
-        self.__product: Product = product  # a reference only, the Product lives on independently
+        self.__product: Product = product
         self.__quantity: int = quantity
 
     # ---------- Getters ----------
@@ -41,7 +40,6 @@ class OrderLine:
 
     def calculate_subtotal(self) -> float:
         """Return price x quantity for this line."""
-        # Read the price through the Product's getter, not its private attribute
         return self.__product.price * self.__quantity
 
     def display_information(self) -> None:

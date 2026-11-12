@@ -1,4 +1,4 @@
-from product import Product  # only used for type hints: Inventory holds Product objects
+from product import Product 
 
 class Inventory:
     """Manages a collection of Product objects.
@@ -10,7 +10,6 @@ class Inventory:
 
     def __init__(self) -> None:
         """Initializer: every new Inventory starts with an empty list of products."""
-        # Private list typed as list[Product], so ANY product subclass can be stored
         self.__products: list[Product] = []
 
     def add_product(self, product: Product) -> bool:
@@ -19,7 +18,6 @@ class Inventory:
         Returns True if it was added, or False if a product with the same ID already exists.
         Returning True/False (instead of printing) lets the main program decide what message to show the user.
         """
-        # Prevent duplicate IDs: reuse find_product() rather than repeating the loop here
         if self.find_product(product.product_id) is not None:
             return False
 
@@ -33,15 +31,13 @@ class Inventory:
         Returns the object instead of printing it, so "Search", "Update Stock"
         and remove_product() can all reuse this method.
         """
-        # .strip() removes accidental spaces, .upper() makes "p001" match "P001"
         product_id = product_id.strip().upper()
 
         for product in self.__products:
-            # Read the ID through the Product's getter, not its private attribute
             if product.product_id == product_id:
                 return product
 
-        return None  # nothing matched
+        return None
 
     def remove_product(self, product_id: str) -> Product | None:
         """Remove a product from this inventory and hand it back, or return None if not found.
@@ -49,13 +45,12 @@ class Inventory:
         Aggregation: removing only drops the inventory's REFERENCE to the product.
         The product object itself still exists, so it can be added to another inventory.
         """
-        # Reuse find_product() so the ID cleaning (strip/upper) isn't repeated here
         product = self.find_product(product_id)
 
         if product is not None:
-            self.__products.remove(product)  # takes it out of the list; does NOT destroy it
+            self.__products.remove(product)  
 
-        return product  # the caller gets the same product object back
+        return product 
 
     def display_all(self) -> None:
         """Print every product in the inventory."""
@@ -66,7 +61,6 @@ class Inventory:
             print("No products in inventory.")
         else:
             for product in self.__products:
-                # Each Product knows how to display itself, so Inventory doesn't need to know the format
                 product.display_information()
 
         print("-" * 48)
