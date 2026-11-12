@@ -8,7 +8,7 @@ from file_handler import load_inventory, save_inventory
 
 
 def choose_supplier(suppliers: dict[str, Supplier]) -> Supplier | None:
-    """NEW: List the known suppliers and return the one the user picks, or None if invalid."""
+    """List the known suppliers and return the one the user picks, or None if invalid."""
     if not suppliers:
         print("No suppliers available.")
         return None
