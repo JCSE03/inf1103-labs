@@ -9,9 +9,7 @@ from order import Order
 
 def section(title: str) -> None:
     """Print a clear heading so each test is easy to find in the output."""
-    print("\n" + "=" * 60)
     print(title)
-    print("=" * 60)
 
 
 section("2.2 ASSOCIATION: Supplier and Product")
