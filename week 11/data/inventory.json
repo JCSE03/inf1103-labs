@@ -1,0 +1,111 @@
+{
+    "suppliers": [
+        {
+            "id": "S001",
+            "name": "Tech Distributors",
+            "contact_email": "sales@techdistributors.com"
+        },
+        {
+            "id": "S002",
+            "name": "Home Furnishings Co",
+            "contact_email": "orders@homefurnishings.com"
+        },
+        {
+            "id": "S003",
+            "name": "Digital Software Ltd",
+            "contact_email": "licensing@digitalsoftware.com"
+        }
+    ],
+    "products": [
+        {
+            "id": "P001",
+            "name": "Laptop",
+            "price": 1200.0,
+            "stock": 15,
+            "supplier_id": "S001",
+            "type": "physical",
+            "weight": 2.2
+        },
+        {
+            "id": "P002",
+            "name": "Mouse",
+            "price": 25.5,
+            "stock": 60,
+            "supplier_id": "S001",
+            "type": "physical",
+            "weight": 0.1
+        },
+        {
+            "id": "P003",
+            "name": "Keyboard",
+            "price": 45.0,
+            "stock": 25,
+            "supplier_id": "S001",
+            "type": "physical",
+            "weight": 0.8
+        },
+        {
+            "id": "P004",
+            "name": "Monitor",
+            "price": 299.99,
+            "stock": 10,
+            "supplier_id": "S001",
+            "type": "physical",
+            "weight": 5.5
+        },
+        {
+            "id": "P005",
+            "name": "Table",
+            "price": 99.99,
+            "stock": 10,
+            "supplier_id": "S002",
+            "type": "physical",
+            "weight": 15.0
+        },
+        {
+            "id": "P006",
+            "name": "Chair",
+            "price": 40.0,
+            "stock": 30,
+            "supplier_id": "S002",
+            "type": "physical",
+            "weight": 7.0
+        },
+        {
+            "id": "P007",
+            "name": "Bottle",
+            "price": 20.0,
+            "stock": 20,
+            "supplier_id": "S002",
+            "type": "physical",
+            "weight": 1.0
+        },
+        {
+            "id": "D001",
+            "name": "Antivirus Pro",
+            "price": 59.9,
+            "stock": 100,
+            "supplier_id": "S003",
+            "type": "digital",
+            "download_size": 850.0
+        },
+        {
+            "id": "D002",
+            "name": "Python Programming E-book",
+            "price": 29.9,
+            "stock": 50,
+            "supplier_id": "S003",
+            "type": "digital",
+            "download_size": 12.5
+        },
+        {
+            "id": "D003",
+            "name": "Steam",
+            "price": 20.0,
+            "stock": 100,
+            "supplier_id": "S003",
+            "type": "digital",
+            "download_size": 100.0
+        }
+    ]
+}
