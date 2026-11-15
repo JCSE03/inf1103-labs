@@ -1,5 +1,6 @@
 FROM python:3.11-slim
 WORKDIR /app
-COPY *.py .
+COPY *.py *.csv ./
+COPY tests/ ./tests/
 ENV DATA_DIR=/app/data
 CMD ["python", "main.py"]
