@@ -2,6 +2,7 @@ from inventory import Inventory
 from supplier import Supplier
 from can_be_shipped import CanBeShipped
 from product_factory import ProductFactory
+from input_helpers import get_positive_float, get_non_negative_int
 from file_handler import load_inventory, save_inventory
 
 
@@ -46,21 +47,21 @@ def add_product(inventory: Inventory, suppliers: dict[str, Supplier]) -> None:
         print("Invalid product type. Product not added.")
         return
 
+    price = get_positive_float("Price: ")
+    stock = get_non_negative_int("Stock Quantity: ")
+
+    weight = 0.0
+    download_size = 0.0
+    if product_type == "physical":
+        weight = get_positive_float("Weight (kg): ")
+    else:
+        download_size = get_positive_float("Download Size (MB): ")
+
     try:
-        price = float(input("Price: "))
-        stock = int(input("Stock Quantity: "))
-
-        weight = 0.0
-        download_size = 0.0
-        if product_type == "physical":
-            weight = float(input("Weight (kg): "))
-        else:
-            download_size = float(input("Download Size (MB): "))
-
         product = ProductFactory.create(product_type, product_id, name, price, stock,
                                         supplier, weight=weight, download_size=download_size)
     except ValueError as error:
-        print(f"Invalid input ({error}). Product not added.")
+        print(f"Invalid product ({error}). Product not added.")
         return
 
     if inventory.add_product(product):

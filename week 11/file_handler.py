@@ -1,4 +1,5 @@
 import os
+import csv
 import json
 
 from inventory import Inventory
@@ -16,18 +17,25 @@ def load_inventory() -> tuple[Inventory, dict[str, Supplier]]:
 
     Suppliers are rebuilt FIRST, then each product is linked to the matching
     Supplier object, so products that share a supplier share the same object.
-    If the file doesn't exist yet, return an empty Inventory and no suppliers.
+    If the file is missing or damaged, return an empty Inventory and no suppliers.
     """
     inventory = Inventory()
     suppliers: dict[str, Supplier] = {}
 
-    if not os.path.exists(INVENTORY_FILE):
+    try:
+        with open(INVENTORY_FILE, "r") as f:
+            data = json.load(f)
+    except FileNotFoundError:
         print("inventory.json not found. Starting with an empty inventory.")
+        return inventory, suppliers
+    except json.JSONDecodeError:
+        backup_file = INVENTORY_FILE + ".damaged"
+        os.replace(INVENTORY_FILE, backup_file)
+        print(f"inventory.json is damaged and could not be read. It was moved to {backup_file}.")
+        print("Starting with an empty inventory.")
         return inventory, suppliers
 
     print("inventory.json found.")
-    with open(INVENTORY_FILE, "r") as f:
-        data = json.load(f)
 
     for supplier_data in data.get("suppliers", []):
         supplier = Supplier.from_dict(supplier_data)
@@ -71,3 +79,42 @@ def save_inventory(inventory: Inventory, suppliers: dict[str, Supplier]) -> None
         json.dump(data, f, indent=4)
 
     print("Inventory saved successfully to inventory.json.")
+
+
+def load_products(path: str, inventory: Inventory, supplier: Supplier) -> int:
+    """Load products from a CSV file through the ProductFactory and add them to the inventory.
+
+    Bad rows are reported and skipped, a missing file is reported without crashing,
+    and the number of products loaded is returned.
+    """
+    loaded = 0
+
+    try:
+        file = open(path, newline="")
+    except FileNotFoundError:
+        print(f"Products file not found: {path}")
+    else:
+        with file:
+            reader = csv.reader(file)
+            next(reader, None)
+
+            for line_number, row in enumerate(reader, start=2):
+                try:
+                    product_type, product_id, name, price, stock = row
+                    product = ProductFactory.create(
+                        product_type, product_id, name, float(price), int(stock), supplier
+                    )
+                except ValueError as error:
+                    print(f"Row {line_number} skipped ({error}): {row}")
+                    continue
+
+                if inventory.add_product(product):
+                    loaded += 1
+                else:
+                    print(f"Row {line_number} skipped (duplicate product ID {product.product_id}): {row}")
+
+        print(f"{loaded} products loaded.")
+    finally:
+        print("Load attempt finished.")
+
+    return loaded
