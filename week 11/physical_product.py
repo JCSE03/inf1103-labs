@@ -55,14 +55,9 @@ class PhysicalProduct(Product, CanBeShipped):
     def to_dict(self) -> dict:
         """Extend Product's dictionary with this product's type label and weight.
 
-        The "type" label is what lets file_handler rebuild the right subclass later.
+        The "type" label is what lets the ProductFactory rebuild the right subclass later.
         """
-        data = super().to_dict() 
+        data = super().to_dict()
         data["type"] = "physical"
         data["weight"] = self.__weight
         return data
-
-    @classmethod
-    def from_dict(cls, data: dict, supplier: Supplier) -> "PhysicalProduct":
-        """Rebuild a PhysicalProduct from one JSON entry."""
-        return cls(data["id"], data["name"], data["price"], data["stock"], supplier, data["weight"])

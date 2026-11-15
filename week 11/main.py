@@ -1,8 +1,7 @@
 from inventory import Inventory
-from supplier import Supplier 
-from physical_product import PhysicalProduct
-from digital_product import DigitalProduct
+from supplier import Supplier
 from can_be_shipped import CanBeShipped
+from product_factory import ProductFactory
 from file_handler import load_inventory, save_inventory
 
 
@@ -15,10 +14,10 @@ def choose_supplier(suppliers: dict[str, Supplier]) -> Supplier | None:
 
     print("Suppliers:")
     for supplier in suppliers.values():
-        supplier.display_information() 
+        supplier.display_information()
 
     supplier_id = input("Choose Supplier ID: ").strip().upper()
-    return suppliers.get(supplier_id) 
+    return suppliers.get(supplier_id)
 
 
 def add_product(inventory: Inventory, suppliers: dict[str, Supplier]) -> None:
@@ -40,9 +39,10 @@ def add_product(inventory: Inventory, suppliers: dict[str, Supplier]) -> None:
     print("Product Type:")
     print("1. Physical Product")
     print("2. Digital Product")
-    product_type = input("Choose type (1-2): ").strip()
+    menu_to_type = {"1": "physical", "2": "digital"}
+    product_type = menu_to_type.get(input("Choose type (1-2): ").strip())
 
-    if product_type not in ("1", "2"):
+    if product_type is None:
         print("Invalid product type. Product not added.")
         return
 
@@ -50,12 +50,15 @@ def add_product(inventory: Inventory, suppliers: dict[str, Supplier]) -> None:
         price = float(input("Price: "))
         stock = int(input("Stock Quantity: "))
 
-        if product_type == "1":
+        weight = 0.0
+        download_size = 0.0
+        if product_type == "physical":
             weight = float(input("Weight (kg): "))
-            product = PhysicalProduct(product_id, name, price, stock, supplier, weight)  
         else:
             download_size = float(input("Download Size (MB): "))
-            product = DigitalProduct(product_id, name, price, stock, supplier, download_size) 
+
+        product = ProductFactory.create(product_type, product_id, name, price, stock,
+                                        supplier, weight=weight, download_size=download_size)
     except ValueError as error:
         print(f"Invalid input ({error}). Product not added.")
         return
@@ -103,7 +106,7 @@ def search_product(inventory: Inventory) -> None:
 
     print("Product Found")
     print("-" * 48)
-    product.display_information()  
+    product.display_information()
 
     print("Supplied by:", end=" ")
     product.supplier.display_information()
@@ -146,7 +149,7 @@ def main() -> None:
             save_inventory(inventory, suppliers)
         elif choice == "6":
             print("Saving inventory before exit...")
-            save_inventory(inventory, suppliers) 
+            save_inventory(inventory, suppliers)
             print("Thank you for using Inventory Management System.")
             print("Program terminated.")
             break

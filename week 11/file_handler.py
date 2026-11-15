@@ -3,17 +3,12 @@ import json
 
 from inventory import Inventory
 from supplier import Supplier
-from physical_product import PhysicalProduct
-from digital_product import DigitalProduct
+from product_factory import ProductFactory
 
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.environ.get("DATA_DIR", os.path.join(SCRIPT_DIR, "data"))
 INVENTORY_FILE = os.path.join(DATA_DIR, "inventory.json")
-PRODUCT_TYPES = {
-    "physical": PhysicalProduct,
-    "digital": DigitalProduct,
-}
 
 
 def load_inventory() -> tuple[Inventory, dict[str, Supplier]]:
@@ -23,7 +18,7 @@ def load_inventory() -> tuple[Inventory, dict[str, Supplier]]:
     Supplier object, so products that share a supplier share the same object.
     If the file doesn't exist yet, return an empty Inventory and no suppliers.
     """
-    inventory = Inventory() 
+    inventory = Inventory()
     suppliers: dict[str, Supplier] = {}
 
     if not os.path.exists(INVENTORY_FILE):
@@ -39,18 +34,23 @@ def load_inventory() -> tuple[Inventory, dict[str, Supplier]]:
         suppliers[supplier.supplier_id] = supplier
 
     for item in data.get("products", []):
-        product_class = PRODUCT_TYPES.get(item.get("type"))
-
-        if product_class is None:
-            print(f"Skipping {item.get('id', '?')}: unknown product type '{item.get('type')}'.")
-            continue
-
         supplier = suppliers.get(item.get("supplier_id"))
         if supplier is None:
             print(f"Skipping {item.get('id', '?')}: unknown supplier '{item.get('supplier_id')}'.")
             continue
 
-        inventory.add_product(product_class.from_dict(item, supplier))
+        try:
+            product = ProductFactory.create(
+                item.get("type", ""), item["id"], item["name"], item["price"],
+                item["stock"], supplier,
+                weight=item.get("weight", 0.0),
+                download_size=item.get("download_size", 0.0),
+            )
+        except (ValueError, KeyError) as error:
+            print(f"Skipping {item.get('id', '?')}: {error}")
+            continue
+
+        inventory.add_product(product)
 
     print("Inventory loaded successfully.")
     return inventory, suppliers

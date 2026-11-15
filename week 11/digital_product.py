@@ -36,14 +36,9 @@ class DigitalProduct(Product):
     def to_dict(self) -> dict:
         """Extend Product's dictionary with this product's type label and download size.
 
-        The "type" label is what lets file_handler rebuild the right subclass later.
+        The "type" label is what lets the ProductFactory rebuild the right subclass later.
         """
         data = super().to_dict()
         data["type"] = "digital"
         data["download_size"] = self.__download_size
         return data
-
-    @classmethod
-    def from_dict(cls, data: dict, supplier: Supplier) -> "DigitalProduct":
-        """Rebuild a DigitalProduct from one JSON entry."""
-        return cls(data["id"], data["name"], data["price"], data["stock"], supplier, data["download_size"])
