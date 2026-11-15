@@ -17,7 +17,17 @@ class Product(ABC):
         The self.__ names below are ATTRIBUTES: data stored inside this object.
         Subclasses call this through super().__init__() instead of repeating it.
         """
-        self.__product_id = product_id.upper() 
+        if not isinstance(price, (int, float)) or isinstance(price, bool):
+            raise ValueError("Price must be a number.")
+        if price <= 0:
+            raise ValueError("Price must be greater than zero.")
+
+        if not isinstance(stock, int) or isinstance(stock, bool):
+            raise ValueError("Stock must be a whole number.")
+        if stock < 0:
+            raise ValueError("Stock cannot be negative.")
+
+        self.__product_id = product_id.upper()
         self.__name = name
         self.__price = price
         self.__stock = stock
